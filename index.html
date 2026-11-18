@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoWorld India | Sales Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f4f6fa;--panel:#fff;--ink:#172033;--muted:#748096;--line:#e8edf4;--navy:#10213d;--blue:#3768e5;--teal:#0e9f91;--orange:#ed9b45;--red:#df6464;--shadow:0 8px 28px rgba(24,42,75,.055)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif}button,input,select{font:inherit}
+.topbar{background:var(--navy);color:white;padding:18px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#4c7cff,#19b6a5);display:grid;place-items:center;font-size:21px;font-weight:800}.brand h1{font:800 17px Manrope;margin:0;letter-spacing:.2px}.brand p{margin:3px 0 0;color:#aab9d0;font-size:11px;letter-spacing:1.3px;text-transform:uppercase}.top-right{display:flex;align-items:center;gap:10px}.status{font-size:12px;color:#b9c7da}.upload{border:1px solid #52647e;color:#fff;background:#203653;padding:10px 14px;border-radius:9px;cursor:pointer;font-weight:600}.upload:hover{background:#2b466c}.wrap{max-width:1500px;margin:auto;padding:26px 30px 45px}.heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:20px;gap:20px}.eyebrow{color:var(--blue);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.heading h2{font:800 27px Manrope;margin:6px 0 5px}.heading p{color:var(--muted);margin:0;font-size:13px}.period{color:#66738a;font-size:12px;background:#eaf0fb;padding:9px 12px;border-radius:9px}
+.filters{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:12px;background:var(--panel);border:1px solid var(--line);padding:15px;border-radius:14px;box-shadow:var(--shadow);margin-bottom:17px}.filter label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin:0 0 7px}.filter select{width:100%;border:1px solid #e2e8f0;background:#fbfcfe;padding:10px;border-radius:8px;color:#26334a;outline:none}.filter select:focus{border-color:#7c9af0}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:17px}.kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px 18px;box-shadow:var(--shadow);min-height:112px}.kpi-top{display:flex;justify-content:space-between;align-items:center}.kpi-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px}.kpi-icon{width:30px;height:30px;border-radius:9px;background:#edf2ff;color:var(--blue);display:grid;place-items:center;font-size:15px}.kpi-value{font:800 23px Manrope;margin-top:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kpi-note{font-size:11px;color:var(--muted);margin-top:3px}
+.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:15px;margin-bottom:15px}.grid.equal{grid-template-columns:1fr 1fr}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 19px;box-shadow:var(--shadow);min-width:0}.card-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:14px}.card h3{font:700 14px Manrope;margin:0}.sub{color:var(--muted);font-size:11px;margin-top:4px}.chartbox{height:260px;position:relative}.chartbox.small{height:230px}.table-wrap{overflow:auto;max-height:330px}.table{border-collapse:collapse;width:100%;font-size:12px}.table th{text-align:left;color:#7b879a;font-size:10px;text-transform:uppercase;letter-spacing:.7px;padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}.table td{padding:11px 10px;border-bottom:1px solid #f0f3f7;white-space:nowrap}.table tr:last-child td{border:0}.pill{padding:4px 8px;border-radius:20px;background:#e9f7f4;color:#138476;font-size:10px;font-weight:700}.empty{padding:35px;text-align:center;color:var(--muted);font-size:13px}.notice{background:#fff8e9;border:1px solid #f4dfb6;color:#805b20;border-radius:12px;padding:13px 15px;font-size:12px;line-height:1.5;margin-bottom:16px}.footer{text-align:center;color:#98a2b3;font-size:11px;padding:20px}.file-input{display:none}
+@media(max-width:1050px){.kpis{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.topbar{padding:14px 16px;align-items:flex-start}.top-right{flex-direction:column;align-items:flex-end}.wrap{padding:20px 14px}.heading{align-items:flex-start;flex-direction:column}.heading h2{font-size:22px}.filters{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.kpi-value{font-size:19px}.grid,.grid.equal{grid-template-columns:1fr}.chartbox{height:235px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="logo">A</div><div><h1>AutoWorld India</h1><p>Sales intelligence platform</p></div></div>
+  <div class="top-right"><span class="status" id="loadStatus">Loading workbook…</span><button class="upload" onclick="document.getElementById('filePicker').click()">↑ Upload Excel</button><input class="file-input" id="filePicker" type="file" accept=".xlsx,.xls,.csv"></div>
+</header>
+<main class="wrap">
+  <section class="heading"><div><div class="eyebrow">Dealership performance</div><h2>Business overview</h2><p>Monitor sales, revenue and inventory across all AutoWorld showrooms.</p></div><div class="period" id="periodLabel">Reporting period: loading</div></section>
+  <div class="notice" id="notice">The dashboard reads the Excel workbook in your browser. Your workbook stays on your device. If the data does not load automatically, choose <b>Upload Excel</b> and select <b>AutoWorld_India_Dataset.xlsx</b>.</div>
+  <section class="filters">
+    <div class="filter"><label>Brand</label><select id="brandFilter"><option value="">All brands</option></select></div>
+    <div class="filter"><label>Showroom</label><select id="showroomFilter"><option value="">All showrooms</option></select></div>
+    <div class="filter"><label>Region</label><select id="regionFilter"><option value="">All regions</option></select></div>
+    <div class="filter"><label>Fuel type</label><select id="fuelFilter"><option value="">All fuel types</option></select></div>
+    <div class="filter"><label>Year</label><select id="yearFilter"><option value="">All years</option></select></div>
+  </section>
+  <section class="kpis">
+    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Net sales revenue</span><span class="kpi-icon">₹</span></div><div class="kpi-value" id="revenue">—</div><div class="kpi-note">Ex-showroom after discount</div></div>
+    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Cars sold</span><span class="kpi-icon">🚘</span></div><div class="kpi-value" id="units">—</div><div class="kpi-note">Completed transactions</div></div>
+    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Average selling price</span><span class="kpi-icon">↗</span></div><div class="kpi-value" id="avgPrice">—</div><div class="kpi-note">Average net price per car</div></div>
+    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Gross profit</span><span class="kpi-icon">◈</span></div><div class="kpi-value" id="profit">—</div><div class="kpi-note">Before showroom overheads</div></div>
+    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Available stock</span><span class="kpi-icon">▦</span></div><div class="kpi-value" id="stock">—</div><div class="kpi-note">In stock, reserved and in transit</div></div>
+  </section>
+  <section class="grid">
+    <article class="card"><div class="card-head"><div><h3>Monthly sales revenue</h3><div class="sub">Net selling price by month</div></div></div><div class="chartbox"><canvas id="monthlyChart"></canvas></div></article>
+    <article class="card"><div class="card-head"><div><h3>Revenue by brand</h3><div class="sub">Share of filtered net sales</div></div></div><div class="chartbox"><canvas id="brandChart"></canvas></div></article>
+  </section>
+  <section class="grid equal">
+    <article class="card"><div class="card-head"><div><h3>Showroom sales performance</h3><div class="sub">Number of completed car sales</div></div></div><div class="chartbox small"><canvas id="showroomChart"></canvas></div></article>
+    <article class="card"><div class="card-head"><div><h3>Inventory status</h3><div class="sub">Current vehicle availability</div></div></div><div class="chartbox small"><canvas id="inventoryChart"></canvas></div></article>
+  </section>
+  <section class="grid equal">
+    <article class="card"><div class="card-head"><div><h3>Sales by fuel type</h3><div class="sub">Completed units by fuel category</div></div></div><div class="chartbox small"><canvas id="fuelChart"></canvas></div></article>
+    <article class="card"><div class="card-head"><div><h3>Top-selling models</h3><div class="sub">Ranked by units sold</div></div></div><div class="table-wrap"><table class="table"><thead><tr><th>Rank</th><th>Model</th><th>Brand</th><th>Units</th><th>Revenue</th></tr></thead><tbody id="topModels"></tbody></table></div></article>
+  </section>
+  <section class="card"><div class="card-head"><div><h3>Recent sales transactions</h3><div class="sub">Latest 12 completed sales in the selected filters</div></div></div><div class="table-wrap"><table class="table"><thead><tr><th>Sale ID</th><th>Date</th><th>Brand / Model</th><th>Showroom</th><th>Payment</th><th>Net selling price</th><th>Gross profit</th></tr></thead><tbody id="recentSales"></tbody></table></div></section>
+  <div class="footer">AutoWorld India · Synthetic training dataset · All values are illustrative, not actual company or market results.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let inventory=[], sales=[], showrooms=[], employees=[], charts={};
+const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n||0);
+const compact=n=>{if(n>=1e7)return '₹'+(n/1e7).toFixed(2)+' Cr';if(n>=1e5)return '₹'+(n/1e5).toFixed(2)+' L';return money(n)};
+const num=v=>Number(v)||0;
+const dateObj=v=>{if(v instanceof Date)return v;if(typeof v==='number'){const d=XLSX.SSF.parse_date_code(v);return new Date(d.y,d.m-1,d.d)}const d=new Date(v);return isNaN(d)?null:d};
+const fmtDate=v=>{const d=dateObj(v);return d?d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—'};
+function sheetRows(wb,name){const s=wb.Sheets[name];return s?XLSX.utils.sheet_to_json(s,{defval:null,raw:true}):[]}
+function setOptions(id,values,allLabel){const el=$(id),old=el.value;el.innerHTML=`<option value="">${allLabel}</option>`+[...values].sort().map(v=>`<option value="${String(v).replaceAll('&','&amp;').replaceAll('"','&quot;')}">${v}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old}
+function aggregate(rows,key,val){const m={};rows.forEach(r=>{const k=r[key]||'Unknown';m[k]=(m[k]||0)+num(r[val])});return m}
+function sum(rows,key){return rows.reduce((a,r)=>a+num(r[key]),0)}
+function destroyCharts(){Object.values(charts).forEach(c=>c.destroy());charts={}}
+function chart(id,type,labels,datasets,opts={}){const ctx=$(id);charts[id]=new Chart(ctx,{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut'||type==='pie',position:'bottom',labels:{boxWidth:9,usePointStyle:true,font:{family:'DM Sans',size:10}}},tooltip:{callbacks:{label:c=>`${c.dataset.label||c.label}: ${type==='doughnut'?c.raw.toLocaleString('en-IN'):money(c.raw)}`}}},scales:type==='doughnut'||type==='pie'?{}:{x:{grid:{display:false},ticks:{font:{size:10},color:'#7b879a'}},y:{grid:{color:'#edf1f6'},ticks:{font:{size:10},color:'#7b879a',callback:v=>opts.currency?compact(v):v}}},...opts.options}})}
+function loadWorkbook(data){
+ const wb=XLSX.read(data,{type:'array',cellDates:true});
+ inventory=sheetRows(wb,'Vehicle_Inventory');sales=sheetRows(wb,'Sales_Transactions');showrooms=sheetRows(wb,'Showroom_Master');
+ if(!inventory.length||!sales.length)throw new Error('Required sheets Vehicle_Inventory and Sales_Transactions were not found.');
+ const showroomMap=Object.fromEntries(showrooms.map(s=>[s.Showroom_ID,s]));
+ sales=sales.map(s=>({...s,_date:dateObj(s.Sale_Date),_showroom:showroomMap[s.Showroom_ID]?.Showroom_Name||s.Showroom_ID,_region:showroomMap[s.Showroom_ID]?.Region||'Unknown'}));
+ inventory=inventory.map(v=>({...v,_region:showroomMap[v.Showroom_ID]?.Region||'Unknown'}));
+ setOptions('brandFilter',new Set([...sales.map(s=>s.Brand),...inventory.map(v=>v.Brand)]),'All brands');
+ setOptions('showroomFilter',showrooms.map(s=>s.Showroom_Name),'All showrooms');
+ setOptions('regionFilter',showrooms.map(s=>s.Region),'All regions');
+ setOptions('fuelFilter',new Set([...sales.map(s=>inventory.find(v=>v.Vehicle_ID===s.Vehicle_ID)?.Fuel_Type).filter(Boolean)]),'All fuel types');
+ setOptions('yearFilter',new Set(sales.map(s=>s._date?.getFullYear()).filter(Boolean)),'All years');
+ $('loadStatus').textContent=`Loaded ${inventory.length.toLocaleString('en-IN')} vehicles`;
+ $('notice').style.display='none';
+ $('periodLabel').textContent=`Data through ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}`;
+ render();
+}
+function filtered(){
+ const brand=$('brandFilter').value, showroom=$('showroomFilter').value, region=$('regionFilter').value, fuel=$('fuelFilter').value, year=$('yearFilter').value;
+ const invMap=Object.fromEntries(inventory.map(v=>[v.Vehicle_ID,v]));
+ const s=sales.filter(r=>{const v=invMap[r.Vehicle_ID];return (!brand||r.Brand===brand)&&(!showroom||r._showroom===showroom)&&(!region||r._region===region)&&(!fuel||v?.Fuel_Type===fuel)&&(!year||String(r._date?.getFullYear())===year)});
+ const inv=inventory.filter(v=>(!brand||v.Brand===brand)&&(!showroom||showrooms.find(x=>x.Showroom_ID===v.Showroom_ID)?.Showroom_Name===showroom)&&(!region||v._region===region)&&(!fuel||v.Fuel_Type===fuel));
+ return {s,inv};
+}
+function render(){
+ const {s,inv}=filtered();const revenue=sum(s,'Net_Selling_Price_INR'),profit=sum(s,'Gross_Profit_INR');
+ $('revenue').textContent=compact(revenue);$('units').textContent=s.length.toLocaleString('en-IN');$('avgPrice').textContent=compact(s.length?revenue/s.length:0);$('profit').textContent=compact(profit);
+ $('stock').textContent=inv.filter(v=>['In Stock','Reserved','In Transit'].includes(v.Vehicle_Status)).length.toLocaleString('en-IN');
+ const months={};s.forEach(r=>{if(!r._date)return;const k=`${r._date.getFullYear()}-${String(r._date.getMonth()+1).padStart(2,'0')}`;months[k]=(months[k]||0)+num(r.Net_Selling_Price_INR)});
+ const monthKeys=Object.keys(months).sort();
+ const brandRev=aggregate(s,'Brand','Net_Selling_Price_INR'),brandEntries=Object.entries(brandRev).sort((a,b)=>b[1]-a[1]).slice(0,10);
+ const showroomUnits=aggregate(s,'_showroom','Sale_ID'); // count corrected below
+ const shCount={};s.forEach(r=>shCount[r._showroom]=(shCount[r._showroom]||0)+1);
+ const invStatus={};inv.forEach(v=>invStatus[v.Vehicle_Status]=(invStatus[v.Vehicle_Status]||0)+1);const fuelCount={};s.forEach(r=>{const v=inv.find(x=>x.Vehicle_ID===r.Vehicle_ID);if(v)fuelCount[v.Fuel_Type]=(fuelCount[v.Fuel_Type]||0)+1});
+ destroyCharts();
+ chart('monthlyChart','line',monthKeys.map(k=>{const [y,m]=k.split('-');return new Date(+y,+m-1,1).toLocaleDateString('en-IN',{month:'short',year:'2-digit'})}),[{label:'Net revenue',data:monthKeys.map(k=>months[k]),borderColor:'#3768e5',backgroundColor:'rgba(55,104,229,.12)',fill:true,tension:.35,pointRadius:2,borderWidth:2}],{currency:true});
+ chart('brandChart','doughnut',brandEntries.map(x=>x[0]),[{label:'Revenue',data:brandEntries.map(x=>x[1]),backgroundColor:['#3768e5','#12a594','#f0a04b','#8b78dc','#e16b77','#5b9bd5','#7dbb79','#d5a24a','#7d91aa','#b47bd1'],borderWidth:0}],{options:{cutout:'64%'}});
+ const shEntries=Object.entries(shCount).sort((a,b)=>b[1]-a[1]);
+ chart('showroomChart','bar',shEntries.map(x=>x[0]),[{label:'Cars sold',data:shEntries.map(x=>x[1]),backgroundColor:'#12a594',borderRadius:5}],{options:{indexAxis:'y',plugins:{legend:{display:false}}}});
+ const statusEntries=Object.entries(invStatus);
+ chart('inventoryChart','doughnut',statusEntries.map(x=>x[0]),[{label:'Vehicles',data:statusEntries.map(x=>x[1]),backgroundColor:['#12a594','#edaa50','#6e8de5','#a7b2c4','#df6464'],borderWidth:0}],{options:{cutout:'62%'}});
+ const fuelEntries=Object.entries(fuelCount).sort((a,b)=>b[1]-a[1]);
+ chart('fuelChart','bar',fuelEntries.map(x=>x[0]),[{label:'Cars sold',data:fuelEntries.map(x=>x[1]),backgroundColor:'#6482d9',borderRadius:5}],{options:{plugins:{legend:{display:false}}}});
+ const modelMap={};s.forEach(r=>{const k=r.Brand+'||'+r.Model;if(!modelMap[k])modelMap[k]={brand:r.Brand,model:r.Model,units:0,revenue:0};modelMap[k].units++;modelMap[k].revenue+=num(r.Net_Selling_Price_INR)});
+ $('topModels').innerHTML=Object.values(modelMap).sort((a,b)=>b.units-a.units).slice(0,10).map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.model}</b></td><td>${r.brand}</td><td>${r.units.toLocaleString('en-IN')}</td><td>${compact(r.revenue)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No matching sales</td></tr>';
+ $('recentSales').innerHTML=[...s].sort((a,b)=>(b._date||0)-(a._date||0)).slice(0,12).map(r=>`<tr><td>${r.Sale_ID}</td><td>${fmtDate(r.Sale_Date)}</td><td><b>${r.Brand}</b> ${r.Model}</td><td>${r._showroom}</td><td><span class="pill">${r.Payment_Mode}</span></td><td>${money(num(r.Net_Selling_Price_INR))}</td><td>${money(num(r.Gross_Profit_INR))}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">No matching sales</td></tr>';
+}
+['brandFilter','showroomFilter','regionFilter','fuelFilter','yearFilter'].forEach(id=>$(id).addEventListener('change',render));
+$('filePicker').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{$('loadStatus').textContent='Reading workbook…';loadWorkbook(await f.arrayBuffer())}catch(err){$('loadStatus').textContent='Could not load workbook';$('notice').style.display='block';$('notice').textContent=err.message}});
+async function boot(){
+ try{
+  const res=await fetch('./AutoWorld_India_Dataset.xlsx');
+  if(!res.ok)throw new Error('Workbook file not found next to index.html');
+  loadWorkbook(await res.arrayBuffer());
+ }catch(e){$('loadStatus').textContent='Excel file needed';$('notice').style.display='block';}
+}
+boot();
+</script>
+</body>
+</html>
