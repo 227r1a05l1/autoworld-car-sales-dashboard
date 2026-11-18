@@ -47,6 +47,7 @@ h1{font-size:25px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px}.actions
 <div id="loadNotice" class="notice">Loading the bundled Excel workbook… If it does not load automatically, select AutoWorld_India_Dataset.xlsx using “Upload Excel workbook”.</div>
 <div class="filters">
 <label>Year<select id="yearFilter"><option value="All">All years</option></select></label>
+<label>Month<select id="monthFilter"><option value="All">All months</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></label>
 <label>Showroom<select id="showroomFilter"><option value="All">All showrooms</option></select></label>
 <label>Brand<select id="brandFilter"><option value="All">All brands</option></select></label>
 <label>Fuel type<select id="fuelFilter"><option value="All">All fuel types</option></select></label>
@@ -66,6 +67,8 @@ const byDate=(a,k)=>a.filter(r=>r[k]).map(r=>({...r,_date:new Date(r[k])}));
 function rows(sheet){return DB[sheet]||[]}
 function filtered(sheet,dateKey){let a=rows(sheet);const yr=$('yearFilter').value,sh=$('showroomFilter').value,br=$('brandFilter').value,fu=$('fuelFilter').value;
 if(yr!=='All'&&dateKey)a=a.filter(r=>String(r[dateKey]||'').slice(0,4)===yr);
+const mo=$('monthFilter').value;
+if(mo!=='All'&&dateKey)a=a.filter(r=>String(r[dateKey]||'').slice(5,7)===mo);
 if(sh!=='All'&&a.some(r=>'Showroom_ID'in r))a=a.filter(r=>r.Showroom_ID===sh);
 if(br!=='All'&&a.some(r=>'Brand'in r))a=a.filter(r=>r.Brand===br);
 if(fu!=='All'&&a.some(r=>'Fuel_Type'in r))a=a.filter(r=>r.Fuel_Type===fu);
@@ -185,8 +188,8 @@ chart('dTypes',['Master data','Operational records'],[vm.length+show.length+emp.
 }
 function initFilters(){let all=[...rows('Vehicle_Inventory'),...rows('Sales_Transactions')];let years=uniq(all.flatMap(r=>[String(r.Sale_Date||'').slice(0,4),String(r.Purchase_Date||'').slice(0,4)]).filter(x=>/^\d{4}$/.test(x)));$('yearFilter').innerHTML='<option>All</option>'+years.map(x=>`<option>${x}</option>`).join('');$('showroomFilter').innerHTML='<option value="All">All showrooms</option>'+rows('Showroom_Master').map(r=>`<option value="${r.Showroom_ID}">${r.Showroom_Name}</option>`).join('');$('brandFilter').innerHTML='<option value="All">All brands</option>'+uniq(rows('Vehicle_Inventory').map(r=>r.Brand)).map(x=>`<option>${x}</option>`).join('');$('fuelFilter').innerHTML='<option value="All">All fuel types</option>'+uniq(rows('Vehicle_Inventory').map(r=>r.Fuel_Type)).map(x=>`<option>${x}</option>`).join('')}
 function renderAll(){render();const active=document.querySelector('.page.active');if(active){/* rerender creates current content and charts */}}
-function resetFilters(){['yearFilter','showroomFilter','brandFilter','fuelFilter'].forEach(id=>$(id).value='All');render()}
-['yearFilter','showroomFilter','brandFilter','fuelFilter'].forEach(id=>$(id).addEventListener('change',render));
+function resetFilters(){['yearFilter','monthFilter','showroomFilter','brandFilter','fuelFilter'].forEach(id=>$(id).value='All');render()}
+['yearFilter','monthFilter','showroomFilter','brandFilter','fuelFilter'].forEach(id=>$(id).addEventListener('change',render));
 $('nav').addEventListener('click',e=>{let b=e.target.closest('button[data-page]');if(!b)return;document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===b.dataset.page));$('pageTitle').textContent=b.textContent.trim();});
 function parseWorkbook(wb){DB={};const sheets=wb.SheetNames;for(const name of sheets){const ws=wb.Sheets[name];if(name==='Vehicle_Master'){let a=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const heads=['Variant_ID','Brand','Model','Variant','Body_Type','Fuel_Type','Transmission','Engine','Mileage','Ex_Showroom_Price_INR','Seating_Capacity','Airbags','Sunroof'];DB[name]=a.filter(r=>r.length).map(r=>Object.fromEntries(heads.map((h,i)=>[h,r[i]])));}else DB[name]=XLSX.utils.sheet_to_json(ws,{defval:'',cellDates:true}).map(row=>Object.fromEntries(Object.entries(row).map(([k,v])=>[k,v instanceof Date? v.toISOString().slice(0,10):v])));}
 initFilters();$('loadNotice').textContent='Workbook loaded successfully. Use the filters above and navigation on the left to explore all business areas.';render();}
