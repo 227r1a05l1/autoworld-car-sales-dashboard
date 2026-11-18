@@ -1,132 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AutoWorld India | Sales Intelligence</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoWorld India | Business Intelligence Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
-:root{--bg:#f4f6fa;--panel:#fff;--ink:#172033;--muted:#748096;--line:#e8edf4;--navy:#10213d;--blue:#3768e5;--teal:#0e9f91;--orange:#ed9b45;--red:#df6464;--shadow:0 8px 28px rgba(24,42,75,.055)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif}button,input,select{font:inherit}
-.topbar{background:var(--navy);color:white;padding:18px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#4c7cff,#19b6a5);display:grid;place-items:center;font-size:21px;font-weight:800}.brand h1{font:800 17px Manrope;margin:0;letter-spacing:.2px}.brand p{margin:3px 0 0;color:#aab9d0;font-size:11px;letter-spacing:1.3px;text-transform:uppercase}.top-right{display:flex;align-items:center;gap:10px}.status{font-size:12px;color:#b9c7da}.upload{border:1px solid #52647e;color:#fff;background:#203653;padding:10px 14px;border-radius:9px;cursor:pointer;font-weight:600}.upload:hover{background:#2b466c}.wrap{max-width:1500px;margin:auto;padding:26px 30px 45px}.heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:20px;gap:20px}.eyebrow{color:var(--blue);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}.heading h2{font:800 27px Manrope;margin:6px 0 5px}.heading p{color:var(--muted);margin:0;font-size:13px}.period{color:#66738a;font-size:12px;background:#eaf0fb;padding:9px 12px;border-radius:9px}
-.filters{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:12px;background:var(--panel);border:1px solid var(--line);padding:15px;border-radius:14px;box-shadow:var(--shadow);margin-bottom:17px}.filter label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin:0 0 7px}.filter select{width:100%;border:1px solid #e2e8f0;background:#fbfcfe;padding:10px;border-radius:8px;color:#26334a;outline:none}.filter select:focus{border-color:#7c9af0}
-.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:17px}.kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px 18px;box-shadow:var(--shadow);min-height:112px}.kpi-top{display:flex;justify-content:space-between;align-items:center}.kpi-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px}.kpi-icon{width:30px;height:30px;border-radius:9px;background:#edf2ff;color:var(--blue);display:grid;place-items:center;font-size:15px}.kpi-value{font:800 23px Manrope;margin-top:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kpi-note{font-size:11px;color:var(--muted);margin-top:3px}
-.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:15px;margin-bottom:15px}.grid.equal{grid-template-columns:1fr 1fr}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 19px;box-shadow:var(--shadow);min-width:0}.card-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:14px}.card h3{font:700 14px Manrope;margin:0}.sub{color:var(--muted);font-size:11px;margin-top:4px}.chartbox{height:260px;position:relative}.chartbox.small{height:230px}.table-wrap{overflow:auto;max-height:330px}.table{border-collapse:collapse;width:100%;font-size:12px}.table th{text-align:left;color:#7b879a;font-size:10px;text-transform:uppercase;letter-spacing:.7px;padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}.table td{padding:11px 10px;border-bottom:1px solid #f0f3f7;white-space:nowrap}.table tr:last-child td{border:0}.pill{padding:4px 8px;border-radius:20px;background:#e9f7f4;color:#138476;font-size:10px;font-weight:700}.empty{padding:35px;text-align:center;color:var(--muted);font-size:13px}.notice{background:#fff8e9;border:1px solid #f4dfb6;color:#805b20;border-radius:12px;padding:13px 15px;font-size:12px;line-height:1.5;margin-bottom:16px}.footer{text-align:center;color:#98a2b3;font-size:11px;padding:20px}.file-input{display:none}
-@media(max-width:1050px){.kpis{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:700px){.topbar{padding:14px 16px;align-items:flex-start}.top-right{flex-direction:column;align-items:flex-end}.wrap{padding:20px 14px}.heading{align-items:flex-start;flex-direction:column}.heading h2{font-size:22px}.filters{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.kpi-value{font-size:19px}.grid,.grid.equal{grid-template-columns:1fr}.chartbox{height:235px}}
-</style>
-</head>
-<body>
-<header class="topbar">
-  <div class="brand"><div class="logo">A</div><div><h1>AutoWorld India</h1><p>Sales intelligence platform</p></div></div>
-  <div class="top-right"><span class="status" id="loadStatus">Loading workbook…</span><button class="upload" onclick="document.getElementById('filePicker').click()">↑ Upload Excel</button><input class="file-input" id="filePicker" type="file" accept=".xlsx,.xls,.csv"></div>
-</header>
-<main class="wrap">
-  <section class="heading"><div><div class="eyebrow">Dealership performance</div><h2>Business overview</h2><p>Monitor sales, revenue and inventory across all AutoWorld showrooms.</p></div><div class="period" id="periodLabel">Reporting period: loading</div></section>
-  <div class="notice" id="notice">The dashboard reads the Excel workbook in your browser. Your workbook stays on your device. If the data does not load automatically, choose <b>Upload Excel</b> and select <b>AutoWorld_India_Dataset.xlsx</b>.</div>
-  <section class="filters">
-    <div class="filter"><label>Brand</label><select id="brandFilter"><option value="">All brands</option></select></div>
-    <div class="filter"><label>Showroom</label><select id="showroomFilter"><option value="">All showrooms</option></select></div>
-    <div class="filter"><label>Region</label><select id="regionFilter"><option value="">All regions</option></select></div>
-    <div class="filter"><label>Fuel type</label><select id="fuelFilter"><option value="">All fuel types</option></select></div>
-    <div class="filter"><label>Year</label><select id="yearFilter"><option value="">All years</option></select></div>
-  </section>
-  <section class="kpis">
-    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Net sales revenue</span><span class="kpi-icon">₹</span></div><div class="kpi-value" id="revenue">—</div><div class="kpi-note">Ex-showroom after discount</div></div>
-    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Cars sold</span><span class="kpi-icon">🚘</span></div><div class="kpi-value" id="units">—</div><div class="kpi-note">Completed transactions</div></div>
-    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Average selling price</span><span class="kpi-icon">↗</span></div><div class="kpi-value" id="avgPrice">—</div><div class="kpi-note">Average net price per car</div></div>
-    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Gross profit</span><span class="kpi-icon">◈</span></div><div class="kpi-value" id="profit">—</div><div class="kpi-note">Before showroom overheads</div></div>
-    <div class="kpi"><div class="kpi-top"><span class="kpi-label">Available stock</span><span class="kpi-icon">▦</span></div><div class="kpi-value" id="stock">—</div><div class="kpi-note">In stock, reserved and in transit</div></div>
-  </section>
-  <section class="grid">
-    <article class="card"><div class="card-head"><div><h3>Monthly sales revenue</h3><div class="sub">Net selling price by month</div></div></div><div class="chartbox"><canvas id="monthlyChart"></canvas></div></article>
-    <article class="card"><div class="card-head"><div><h3>Revenue by brand</h3><div class="sub">Share of filtered net sales</div></div></div><div class="chartbox"><canvas id="brandChart"></canvas></div></article>
-  </section>
-  <section class="grid equal">
-    <article class="card"><div class="card-head"><div><h3>Showroom sales performance</h3><div class="sub">Number of completed car sales</div></div></div><div class="chartbox small"><canvas id="showroomChart"></canvas></div></article>
-    <article class="card"><div class="card-head"><div><h3>Inventory status</h3><div class="sub">Current vehicle availability</div></div></div><div class="chartbox small"><canvas id="inventoryChart"></canvas></div></article>
-  </section>
-  <section class="grid equal">
-    <article class="card"><div class="card-head"><div><h3>Sales by fuel type</h3><div class="sub">Completed units by fuel category</div></div></div><div class="chartbox small"><canvas id="fuelChart"></canvas></div></article>
-    <article class="card"><div class="card-head"><div><h3>Top-selling models</h3><div class="sub">Ranked by units sold</div></div></div><div class="table-wrap"><table class="table"><thead><tr><th>Rank</th><th>Model</th><th>Brand</th><th>Units</th><th>Revenue</th></tr></thead><tbody id="topModels"></tbody></table></div></article>
-  </section>
-  <section class="card"><div class="card-head"><div><h3>Recent sales transactions</h3><div class="sub">Latest 12 completed sales in the selected filters</div></div></div><div class="table-wrap"><table class="table"><thead><tr><th>Sale ID</th><th>Date</th><th>Brand / Model</th><th>Showroom</th><th>Payment</th><th>Net selling price</th><th>Gross profit</th></tr></thead><tbody id="recentSales"></tbody></table></div></section>
-  <div class="footer">AutoWorld India · Synthetic training dataset · All values are illustrative, not actual company or market results.</div>
-</main>
+:root{--bg:#f4f7fb;--panel:#fff;--ink:#17243a;--muted:#6d7b90;--line:#e7edf5;--nav:#101c32;--blue:#3267e3;--teal:#16a6a1;--orange:#f0a33a;--red:#df626b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+.app{display:flex;min-height:100vh}.sidebar{width:250px;background:var(--nav);color:#dce6f5;padding:24px 16px;position:fixed;inset:0 auto 0 0;overflow:auto}
+.brand{font-size:19px;font-weight:800;color:#fff;padding:4px 10px 22px}.brand small{display:block;font-size:10px;color:#8ea2c1;letter-spacing:2px;margin-top:5px}
+.nav-label{font-size:10px;color:#8295b3;text-transform:uppercase;letter-spacing:1.5px;padding:14px 10px 7px}
+.nav button{display:flex;width:100%;border:0;background:transparent;color:#c7d3e5;padding:11px 12px;border-radius:9px;text-align:left;margin:2px 0;cursor:pointer;font-size:13px;gap:10px;align-items:center}
+.nav button:hover,.nav button.active{background:#243653;color:white}.nav button span{width:20px;text-align:center}
+.main{margin-left:250px;width:calc(100% - 250px);padding:26px 30px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px}
+h1{font-size:25px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px}.actions{display:flex;gap:9px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;padding:9px 13px;border-radius:8px;cursor:pointer;color:var(--ink);font-weight:600}.btn.primary{background:var(--blue);color:white;border-color:var(--blue)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;background:#fff;padding:13px;border:1px solid var(--line);border-radius:12px;margin-bottom:18px}
+.filters label{font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:4px}.filters select{min-width:130px;padding:8px;border:1px solid var(--line);border-radius:7px;background:white;color:var(--ink)}
+.page{display:none}.page.active{display:block}.section-head{display:flex;justify-content:space-between;align-items:end;margin:20px 0 12px}.section-head h2{font-size:18px;margin:0}.section-head p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:15px}.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}.kpi .label{color:var(--muted);font-size:12px}.kpi .value{font-size:23px;font-weight:800;margin:7px 0 2px;letter-spacing:-.5px}.kpi .note{font-size:11px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}.panel h3{font-size:14px;margin:0 0 12px}.chart-wrap{height:260px;position:relative}.wide{grid-column:1/-1}
+.table-wrap{overflow:auto;max-height:390px;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line)}th{background:#f7f9fc;color:#52627a;position:sticky;top:0;z-index:1}tr:hover td{background:#fafcff}
+.notice{background:#eef4ff;color:#35528b;padding:12px 14px;border-radius:9px;margin-bottom:14px;font-size:12px}.empty{padding:30px;text-align:center;color:var(--muted)}
+.upload{display:none}.footer{color:#8793a5;font-size:11px;text-align:center;padding:24px}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,1fr)}.sidebar{width:215px}.main{margin-left:215px;width:calc(100% - 215px);padding:20px}}
+@media(max-width:720px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.nav{display:grid;grid-template-columns:repeat(2,1fr)}.nav-label{grid-column:1/-1}.main{margin:0;width:100%;padding:16px}.cols{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}}
+</style></head>
+<body><div class="app">
+<aside class="sidebar"><div class="brand">AUTOWORLD INDIA<small>BUSINESS INTELLIGENCE</small></div>
+<div class="nav" id="nav">
+<div class="nav-label">Overview</div>
+<button class="active" data-page="overview"><span>▦</span>Executive Overview</button>
+<div class="nav-label">Business Analysis</div>
+<button data-page="inventory"><span>🚘</span>Vehicle & Inventory</button>
+<button data-page="sales"><span>↗</span>Sales Analysis</button>
+<button data-page="customers"><span>♙</span>Customer Analysis</button>
+<button data-page="showrooms"><span>⌖</span>Showroom Analysis</button>
+<button data-page="employees"><span>♧</span>Employee Analysis</button>
+<button data-page="purchases"><span>⇄</span>Purchase & Procurement</button>
+<button data-page="expenses"><span>₹</span>Expense Analysis</button>
+<button data-page="service"><span>⚙</span>After-Sales Service</button>
+<button data-page="data"><span>▤</span>Data Overview</button></div></aside>
+<main class="main"><div class="top"><div><h1 id="pageTitle">Executive Overview</h1><div class="sub">A complete view of dealership operations • INR • Illustrative synthetic dataset</div></div>
+<div class="actions"><input id="fileInput" class="upload" type="file" accept=".xlsx,.xls"><button class="btn" onclick="document.getElementById('fileInput').click()">Upload Excel workbook</button><button class="btn primary" onclick="resetFilters()">Reset filters</button></div></div>
+<div id="loadNotice" class="notice">Loading the bundled Excel workbook… If it does not load automatically, select AutoWorld_India_Dataset.xlsx using “Upload Excel workbook”.</div>
+<div class="filters">
+<label>Year<select id="yearFilter"><option value="All">All years</option></select></label>
+<label>Showroom<select id="showroomFilter"><option value="All">All showrooms</option></select></label>
+<label>Brand<select id="brandFilter"><option value="All">All brands</option></select></label>
+<label>Fuel type<select id="fuelFilter"><option value="All">All fuel types</option></select></label>
+</div>
+<section class="page active" id="overview"></section><section class="page" id="inventory"></section><section class="page" id="sales"></section><section class="page" id="customers"></section><section class="page" id="showrooms"></section><section class="page" id="employees"></section><section class="page" id="purchases"></section><section class="page" id="expenses"></section><section class="page" id="service"></section><section class="page" id="data"></section>
+<div class="footer">AutoWorld India • Educational analytics project • All customer and business records are synthetic</div>
+</main></div>
 <script>
-const $=id=>document.getElementById(id);
-let inventory=[], sales=[], showrooms=[], employees=[], charts={};
-const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n||0);
-const compact=n=>{if(n>=1e7)return '₹'+(n/1e7).toFixed(2)+' Cr';if(n>=1e5)return '₹'+(n/1e5).toFixed(2)+' L';return money(n)};
-const num=v=>Number(v)||0;
-const dateObj=v=>{if(v instanceof Date)return v;if(typeof v==='number'){const d=XLSX.SSF.parse_date_code(v);return new Date(d.y,d.m-1,d.d)}const d=new Date(v);return isNaN(d)?null:d};
-const fmtDate=v=>{const d=dateObj(v);return d?d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—'};
-function sheetRows(wb,name){const s=wb.Sheets[name];return s?XLSX.utils.sheet_to_json(s,{defval:null,raw:true}):[]}
-function setOptions(id,values,allLabel){const el=$(id),old=el.value;el.innerHTML=`<option value="">${allLabel}</option>`+[...values].sort().map(v=>`<option value="${String(v).replaceAll('&','&amp;').replaceAll('"','&quot;')}">${v}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old}
-function aggregate(rows,key,val){const m={};rows.forEach(r=>{const k=r[key]||'Unknown';m[k]=(m[k]||0)+num(r[val])});return m}
-function sum(rows,key){return rows.reduce((a,r)=>a+num(r[key]),0)}
-function destroyCharts(){Object.values(charts).forEach(c=>c.destroy());charts={}}
-function chart(id,type,labels,datasets,opts={}){const ctx=$(id);charts[id]=new Chart(ctx,{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut'||type==='pie',position:'bottom',labels:{boxWidth:9,usePointStyle:true,font:{family:'DM Sans',size:10}}},tooltip:{callbacks:{label:c=>`${c.dataset.label||c.label}: ${type==='doughnut'?c.raw.toLocaleString('en-IN'):money(c.raw)}`}}},scales:type==='doughnut'||type==='pie'?{}:{x:{grid:{display:false},ticks:{font:{size:10},color:'#7b879a'}},y:{grid:{color:'#edf1f6'},ticks:{font:{size:10},color:'#7b879a',callback:v=>opts.currency?compact(v):v}}},...opts.options}})}
-function loadWorkbook(data){
- const wb=XLSX.read(data,{type:'array',cellDates:true});
- inventory=sheetRows(wb,'Vehicle_Inventory');sales=sheetRows(wb,'Sales_Transactions');showrooms=sheetRows(wb,'Showroom_Master');
- if(!inventory.length||!sales.length)throw new Error('Required sheets Vehicle_Inventory and Sales_Transactions were not found.');
- const showroomMap=Object.fromEntries(showrooms.map(s=>[s.Showroom_ID,s]));
- sales=sales.map(s=>({...s,_date:dateObj(s.Sale_Date),_showroom:showroomMap[s.Showroom_ID]?.Showroom_Name||s.Showroom_ID,_region:showroomMap[s.Showroom_ID]?.Region||'Unknown'}));
- inventory=inventory.map(v=>({...v,_region:showroomMap[v.Showroom_ID]?.Region||'Unknown'}));
- setOptions('brandFilter',new Set([...sales.map(s=>s.Brand),...inventory.map(v=>v.Brand)]),'All brands');
- setOptions('showroomFilter',showrooms.map(s=>s.Showroom_Name),'All showrooms');
- setOptions('regionFilter',showrooms.map(s=>s.Region),'All regions');
- setOptions('fuelFilter',new Set([...sales.map(s=>inventory.find(v=>v.Vehicle_ID===s.Vehicle_ID)?.Fuel_Type).filter(Boolean)]),'All fuel types');
- setOptions('yearFilter',new Set(sales.map(s=>s._date?.getFullYear()).filter(Boolean)),'All years');
- $('loadStatus').textContent=`Loaded ${inventory.length.toLocaleString('en-IN')} vehicles`;
- $('notice').style.display='none';
- $('periodLabel').textContent=`Data through ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}`;
- render();
+let DB={}, charts={}; const $=id=>document.getElementById(id);
+const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(Number(n)||0);
+const num=n=>new Intl.NumberFormat('en-IN').format(Number(n)||0);
+const pct=n=>(Number(n)||0).toFixed(1)+'%';
+const sum=(a,k)=>a.reduce((s,r)=>s+(Number(r[k])||0),0);
+const uniq=a=>[...new Set(a.filter(v=>v!==undefined&&v!==null&&v!==''))].sort((a,b)=>String(a).localeCompare(String(b)));
+const group=(a,k,v)=>{let o={};a.forEach(r=>{let x=r[k]??'Unknown';o[x]=(o[x]||0)+(v?Number(r[v])||0:1)});return Object.entries(o).sort((a,b)=>b[1]-a[1])};
+const byDate=(a,k)=>a.filter(r=>r[k]).map(r=>({...r,_date:new Date(r[k])}));
+function rows(sheet){return DB[sheet]||[]}
+function filtered(sheet,dateKey){let a=rows(sheet);const yr=$('yearFilter').value,sh=$('showroomFilter').value,br=$('brandFilter').value,fu=$('fuelFilter').value;
+if(yr!=='All'&&dateKey)a=a.filter(r=>String(r[dateKey]||'').slice(0,4)===yr);
+if(sh!=='All'&&a.some(r=>'Showroom_ID'in r))a=a.filter(r=>r.Showroom_ID===sh);
+if(br!=='All'&&a.some(r=>'Brand'in r))a=a.filter(r=>r.Brand===br);
+if(fu!=='All'&&a.some(r=>'Fuel_Type'in r))a=a.filter(r=>r.Fuel_Type===fu);
+return a}
+function setKpis(id,items){$('kpi-'+id).innerHTML='<div class="grid">'+items.map(x=>`<div class="kpi"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="note">${x[2]||''}</div></div>`).join('')+'</div>'}
+function panel(title,key,wide=false){return `<div class="panel ${wide?'wide':''}"><h3>${title}</h3><div class="chart-wrap"><canvas id="${key}"></canvas></div></div>`}
+function table(title,headers,body){return `<div class="panel wide"><h3>${title}</h3><div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${body.length?body.map(r=>`<tr>${r.map(v=>`<td>${v??'—'}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${headers.length}">No records for the selected filters</td></tr>`}</tbody></table></div></div>`}
+function chart(id,labels,data,type='bar',label='Records'){if(charts[id])charts[id].destroy();const el=$(id);if(!el)return;charts[id]=new Chart(el,{type,data:{labels,datasets:[{label,data,backgroundColor:['#3267e3','#16a6a1','#f0a33a','#7d6be8','#df626b','#5b91b7','#76b58a','#b78a54'],borderColor:'#fff',borderWidth:1,borderRadius:type==='bar'?5:0,tension:.35,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut'||type==='pie',position:'bottom'}},scales:type==='doughnut'||type==='pie'?{}:{y:{beginAtZero:true,grid:{color:'#edf1f6'}},x:{grid:{display:false}}}}})}
+function section(id,title,desc,kpis,panels,tables=''){let s=$(id);s.innerHTML=`<div class="section-head"><div><h2>${title}</h2><p>${desc}</p></div></div><div id="kpi-${id}">${kpis||''}</div><div class="cols">${panels||''}</div>${tables}`}
+function render(){if(!Object.keys(DB).length)return;Object.values(charts).forEach(c=>c.destroy());charts={};
+const inv=filtered('Vehicle_Inventory','Purchase_Date'),sales=filtered('Sales_Transactions','Sale_Date'),cust=filtered('Customer_Details'),show=rows('Showroom_Master'),emp=filtered('Employee_Master','Joining_Date'),pur=filtered('Purchase_Records','Purchase_Date'),exp=filtered('Expenses','Expense_Date'),srv=filtered('Service_Records','Service_Date'),vm=rows('Vehicle_Master');
+const k=(id,arr)=>setKpis(id,arr);
+section('overview','Business at a glance','Key indicators across sales, stock, procurement, expenses and servicing.',
+'',`${panel('Monthly sales revenue','ovMonthly')}${panel('Vehicle inventory status','ovStock')}${panel('Revenue by brand','ovBrand')}${panel('Operating expenses by category','ovExpense')}${panel('Service types','ovService')}${panel('Purchase payment status','ovPurchase')}`,
+table('Business snapshot',['Metric','Value'],[['Vehicle variants',num(vm.length)],['Physical vehicles',num(inv.length)],['Completed sales',num(sales.length)],['Customers',num(cust.length)],['Showrooms',num(show.length)],['Employees',num(emp.length)],['Purchase records',num(pur.length)],['Expense records',num(exp.length)],['Service records',num(srv.length)]]));
+k('overview', [['Net sales revenue',money(sum(sales,'Net_Selling_Price_INR')),'Before registration and insurance pass-throughs'],['Vehicles sold',num(sales.length),'Completed sales'],['Gross profit',money(sum(sales,'Gross_Profit_INR')),'Before showroom overheads'],['Vehicles in stock',num(inv.filter(r=>r.Vehicle_Status==='In Stock').length),'Current inventory status']]);
+chart('ovMonthly',group(sales.map(r=>({...r,Month:String(r.Sale_Date||'').slice(0,7)})),'Month','Net_Selling_Price_INR').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[0]),group(sales.map(r=>({...r,Month:String(r.Sale_Date||'').slice(0,7)})),'Month','Net_Selling_Price_INR').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[1]),'line','Revenue');
+chart('ovStock',group(inv,'Vehicle_Status').map(x=>x[0]),group(inv,'Vehicle_Status').map(x=>x[1]),'doughnut');
+chart('ovBrand',group(sales,'Brand','Net_Selling_Price_INR').slice(0,8).map(x=>x[0]),group(sales,'Brand','Net_Selling_Price_INR').slice(0,8).map(x=>x[1]));
+chart('ovExpense',group(exp,'Expense_Category','Amount_INR').map(x=>x[0]),group(exp,'Expense_Category','Amount_INR').map(x=>x[1]));
+chart('ovService',group(srv,'Service_Type').map(x=>x[0]),group(srv,'Service_Type').map(x=>x[1]),'doughnut');
+chart('ovPurchase',group(pur,'Payment_Status').map(x=>x[0]),group(pur,'Payment_Status').map(x=>x[1]),'doughnut');
+
+section('inventory','Vehicle & Inventory Analysis','Vehicle specifications, availability, stock mix and inventory valuation.',
+'',`${panel('Inventory by status','inStatus')}${panel('Inventory by brand','inBrand')}${panel('Fuel type mix','inFuel')}${panel('Stock by showroom','inShowroom')}${panel('Model-wise inventory','inModel')}${panel('Vehicle manufacturing year','inYear')}`,
+table('Inventory summary',['Vehicle status','Units'],group(inv,'Vehicle_Status').map(x=>[x[0],num(x[1])]))+
+table('Vehicle master – variant catalogue',['Variant ID','Brand','Model','Variant','Body type','Fuel','Transmission','Engine','Mileage','Ex-showroom price','Seats','Airbags','Feature'],vm.slice(0,100).map(r=>Object.values(r))));
+chart('inStatus',group(inv,'Vehicle_Status').map(x=>x[0]),group(inv,'Vehicle_Status').map(x=>x[1]),'doughnut');
+chart('inBrand',group(inv,'Brand').slice(0,10).map(x=>x[0]),group(inv,'Brand').slice(0,10).map(x=>x[1]));
+chart('inFuel',group(inv,'Fuel_Type').map(x=>x[0]),group(inv,'Fuel_Type').map(x=>x[1]),'doughnut');
+chart('inShowroom',group(inv,'Showroom_ID').map(x=>x[0]),group(inv,'Showroom_ID').map(x=>x[1]));
+chart('inModel',group(inv,'Model').slice(0,10).map(x=>x[0]),group(inv,'Model').slice(0,10).map(x=>x[1]));
+chart('inYear',group(inv,'Manufacturing_Year').sort((a,b)=>a[0]-b[0]).map(x=>x[0]),group(inv,'Manufacturing_Year').sort((a,b)=>a[0]-b[0]).map(x=>x[1]));
+k('inventory',[['Total vehicles',num(inv.length),'Filtered physical inventory'],['In stock',num(inv.filter(r=>r.Vehicle_Status==='In Stock').length),'Available stock'],['Reserved',num(inv.filter(r=>r.Vehicle_Status==='Reserved').length),'Reserved units'],['Inventory purchase value',money(sum(inv,'Purchase_Cost_INR')),'Based on recorded purchase cost']]);
+
+section('sales','Sales Performance Analysis','Revenue, discounts, profit, payment methods, channels and salespeople.',
+'',`${panel('Monthly net selling revenue','sMonthly')}${panel('Sales by brand','sBrand')}${panel('Payment mode mix','sPay')}${panel('Sales channel mix','sChannel')}${panel('Gross profit by brand','sProfit')}${panel('Top salesperson by sales count','sPeople')}`,
+table('Recent sales transactions',['Sale ID','Date','Brand','Model','Showroom','Salesperson','Net selling price','Discount','Invoice total','Gross profit'],sales.slice(-100).reverse().map(r=>[r.Sale_ID,r.Sale_Date,r.Brand,r.Model,r.Showroom_ID,r.Salesperson_ID,money(r.Net_Selling_Price_INR),money(r.Discount_INR),money(r.Invoice_Total_INR),money(r.Gross_Profit_INR)])));
+chart('sMonthly',group(sales.map(r=>({...r,Month:String(r.Sale_Date||'').slice(0,7)})),'Month','Net_Selling_Price_INR').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[0]),group(sales.map(r=>({...r,Month:String(r.Sale_Date||'').slice(0,7)})),'Month','Net_Selling_Price_INR').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[1]),'line','Revenue');
+chart('sBrand',group(sales,'Brand','Net_Selling_Price_INR').slice(0,10).map(x=>x[0]),group(sales,'Brand','Net_Selling_Price_INR').slice(0,10).map(x=>x[1]));
+chart('sPay',group(sales,'Payment_Mode').map(x=>x[0]),group(sales,'Payment_Mode').map(x=>x[1]),'doughnut');
+chart('sChannel',group(sales,'Sale_Channel').map(x=>x[0]),group(sales,'Sale_Channel').map(x=>x[1]),'doughnut');
+chart('sProfit',group(sales,'Brand','Gross_Profit_INR').slice(0,10).map(x=>x[0]),group(sales,'Brand','Gross_Profit_INR').slice(0,10).map(x=>x[1]));
+chart('sPeople',group(sales,'Salesperson_ID').slice(0,10).map(x=>x[0]),group(sales,'Salesperson_ID').slice(0,10).map(x=>x[1]));
+k('sales',[['Net sales revenue',money(sum(sales,'Net_Selling_Price_INR')),'Ex-showroom after discount'],['Invoice value',money(sum(sales,'Invoice_Total_INR')),'Includes registration, insurance and accessories'],['Average selling price',money(sales.length?sum(sales,'Net_Selling_Price_INR')/sales.length:0),'Per completed sale'],['Gross profit',money(sum(sales,'Gross_Profit_INR')),'Before overheads']]);
+
+section('customers','Customer Analysis','Customer profile, demographics, geography, occupations and communication preferences.',
+'',`${panel('Customer age groups','cAge')}${panel('Customer gender distribution','cGender')}${panel('Customers by state','cState')}${panel('Occupation mix','cOcc')}${panel('Customer type','cType')}${panel('Preferred contact channel','cContact')}`,
+table('Customer directory',['Customer ID','Customer name','Age','Gender','City','State','Occupation','Customer type','Contact preference'],cust.slice(0,150).map(r=>[r.Customer_ID,r.Customer_Name,r.Age,r.Gender,r.City,r.State,r.Occupation,r.Customer_Type,r.Preferred_Contact_Channel])));
+const ageGroups={'18–25':0,'26–35':0,'36–45':0,'46–55':0,'56+':0};cust.forEach(r=>{let a=+r.Age;let g=a<=25?'18–25':a<=35?'26–35':a<=45?'36–45':a<=55?'46–55':'56+';ageGroups[g]++});
+chart('cAge',Object.keys(ageGroups),Object.values(ageGroups));
+chart('cGender',group(cust,'Gender').map(x=>x[0]),group(cust,'Gender').map(x=>x[1]),'doughnut');
+chart('cState',group(cust,'State').slice(0,10).map(x=>x[0]),group(cust,'State').slice(0,10).map(x=>x[1]));
+chart('cOcc',group(cust,'Occupation').map(x=>x[0]),group(cust,'Occupation').map(x=>x[1]),'doughnut');
+chart('cType',group(cust,'Customer_Type').map(x=>x[0]),group(cust,'Customer_Type').map(x=>x[1]),'doughnut');
+chart('cContact',group(cust,'Preferred_Contact_Channel').map(x=>x[0]),group(cust,'Preferred_Contact_Channel').map(x=>x[1]),'doughnut');
+k('customers',[['Customer records',num(cust.length),'Synthetic customer profiles'],['Average age',pct(cust.length?sum(cust,'Age')/cust.length:0).replace('%',' years'),'Across customer records'],['Cities represented',num(uniq(cust.map(r=>r.City)).length),'Customer locations'],['States represented',num(uniq(cust.map(r=>r.State)).length),'Customer locations']]);
+
+section('showrooms','Showroom Performance','Compare showroom footprint, sales, stock, expenses and service operations.',
+'',`${panel('Sales revenue by showroom','shSales')}${panel('Vehicles sold by showroom','shUnits')}${panel('Inventory by showroom','shStock')}${panel('Expenses by showroom','shExpense')}${panel('Service records by showroom','shService')}${panel('Showroom region distribution','shRegion')}`,
+table('Showroom directory',['ID','Showroom','City','State','Region'],show.map(r=>[r.Showroom_ID,r.Showroom_Name,r.City,r.State,r.Region])));
+const shName=id=>(show.find(x=>x.Showroom_ID===id)||{}).Showroom_Name||id;
+chart('shSales',group(sales,'Showroom_ID','Net_Selling_Price_INR').map(x=>shName(x[0])),group(sales,'Showroom_ID','Net_Selling_Price_INR').map(x=>x[1]));
+chart('shUnits',group(sales,'Showroom_ID').map(x=>shName(x[0])),group(sales,'Showroom_ID').map(x=>x[1]));
+chart('shStock',group(inv,'Showroom_ID').map(x=>shName(x[0])),group(inv,'Showroom_ID').map(x=>x[1]));
+chart('shExpense',group(exp,'Showroom_ID','Amount_INR').map(x=>shName(x[0])),group(exp,'Showroom_ID','Amount_INR').map(x=>x[1]));
+chart('shService',group(srv,'Showroom_ID').map(x=>shName(x[0])),group(srv,'Showroom_ID').map(x=>x[1]));
+chart('shRegion',group(show,'Region').map(x=>x[0]),group(show,'Region').map(x=>x[1]),'doughnut');
+k('showrooms',[['Showrooms',num(show.length),'Network locations'],['Regions',num(uniq(show.map(r=>r.Region)).length),'Geographic coverage'],['Sales revenue',money(sum(sales,'Net_Selling_Price_INR')),'Across selected records'],['Inventory units',num(inv.length),'Across selected records']]);
+
+section('employees','Employee Analysis','Workforce distribution, roles, showroom allocation and salesperson activity.',
+'',`${panel('Employees by designation','eRole')}${panel('Employees by showroom','eShow')}${panel('Sales count by salesperson','eSales')}${panel('Sales revenue by salesperson','eRevenue')}`,
+table('Employee directory and target information',['Employee ID','Employee name','Showroom','Designation','Joining date','Monthly sales target','Recorded sales'],emp.map(r=>[r.Employee_ID,r.Employee_Name,r.Showroom_ID,r.Designation,r.Joining_Date,num(r.Monthly_Sales_Target),num(sales.filter(s=>s.Salesperson_ID===r.Employee_ID).length)])));
+chart('eRole',group(emp,'Designation').map(x=>x[0]),group(emp,'Designation').map(x=>x[1]),'doughnut');
+chart('eShow',group(emp,'Showroom_ID').map(x=>x[0]),group(emp,'Showroom_ID').map(x=>x[1]));
+const employeeSales=group(sales,'Salesperson_ID').slice(0,10);
+chart('eSales',employeeSales.map(x=>x[0]),employeeSales.map(x=>x[1]));
+const employeeRevenue=group(sales,'Salesperson_ID','Net_Selling_Price_INR').slice(0,10);
+chart('eRevenue',employeeRevenue.map(x=>x[0]),employeeRevenue.map(x=>x[1]));
+k('employees',[['Employees',num(emp.length),'Employee master records'],['Sales executives',num(emp.filter(r=>String(r.Designation).toLowerCase().includes('sales')).length),'Based on designation text'],['Sales transactions',num(sales.length),'Selected sales records'],['Salespeople with sales',num(uniq(sales.map(r=>r.Salesperson_ID)).length),'Distinct salesperson IDs']]);
+
+section('purchases','Purchase & Procurement Analysis','Supplier mix, landed costs, procurement volumes and payment status.',
+'',`${panel('Purchases by supplier','pSupplier')}${panel('Purchase payment status','pStatus')}${panel('Purchase value by brand','pBrand')}${panel('Purchases by showroom','pShow')}${panel('Monthly procurement value','pMonth')}`,
+table('Purchase records',['Purchase ID','Vehicle ID','Supplier','Date','Showroom','Brand','Model','Purchase cost','Logistics','Landed cost','Payment status'],pur.slice(0,200).map(r=>[r.Purchase_ID,r.Vehicle_ID,r.Supplier,r.Purchase_Date,r.Showroom_ID,r.Brand,r.Model,money(r.Purchase_Cost_INR),money(r.Logistics_and_Handling_INR),money(r.Total_Landed_Cost_INR),r.Payment_Status])));
+chart('pSupplier',group(pur,'Supplier').map(x=>x[0]),group(pur,'Supplier').map(x=>x[1]),'doughnut');
+chart('pStatus',group(pur,'Payment_Status').map(x=>x[0]),group(pur,'Payment_Status').map(x=>x[1]),'doughnut');
+chart('pBrand',group(pur,'Brand','Total_Landed_Cost_INR').slice(0,10).map(x=>x[0]),group(pur,'Brand','Total_Landed_Cost_INR').slice(0,10).map(x=>x[1]));
+chart('pShow',group(pur,'Showroom_ID','Total_Landed_Cost_INR').map(x=>x[0]),group(pur,'Showroom_ID','Total_Landed_Cost_INR').map(x=>x[1]));
+chart('pMonth',group(pur.map(r=>({...r,Month:String(r.Purchase_Date||'').slice(0,7)})),'Month','Total_Landed_Cost_INR').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[0]),group(pur.map(r=>({...r,Month:String(r.Purchase_Date||'').slice(0,7)})),'Month','Total_Landed_Cost_INR').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[1]),'line');
+k('purchases',[['Purchase records',num(pur.length),'Procurement transactions'],['Purchase cost',money(sum(pur,'Purchase_Cost_INR')),'Vehicle acquisition cost'],['Logistics & handling',money(sum(pur,'Logistics_and_Handling_INR')),'Additional procurement costs'],['Total landed cost',money(sum(pur,'Total_Landed_Cost_INR')),'Purchase plus logistics']]);
+
+section('expenses','Operating Expense Analysis','Expense categories, monthly trends, showroom costs and payment status.',
+'',`${panel('Expenses by category','xCat')}${panel('Expense payment status','xStatus')}${panel('Expenses by showroom','xShow')}${panel('Monthly expense trend','xMonth')}`,
+table('Expense ledger',['Expense ID','Date','Showroom','Category','Description','Amount','Payment status'],exp.slice(0,250).map(r=>[r.Expense_ID,r.Expense_Date,r.Showroom_ID,r.Expense_Category,r.Description,money(r.Amount_INR),r.Payment_Status])));
+chart('xCat',group(exp,'Expense_Category','Amount_INR').map(x=>x[0]),group(exp,'Expense_Category','Amount_INR').map(x=>x[1]));
+chart('xStatus',group(exp,'Payment_Status','Amount_INR').map(x=>x[0]),group(exp,'Payment_Status','Amount_INR').map(x=>x[1]),'doughnut');
+chart('xShow',group(exp,'Showroom_ID','Amount_INR').map(x=>x[0]),group(exp,'Showroom_ID','Amount_INR').map(x=>x[1]));
+chart('xMonth',group(exp.map(r=>({...r,Month:String(r.Expense_Date||'').slice(0,7)})),'Month','Amount_INR').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[0]),group(exp.map(r=>({...r,Month:String(r.Expense_Date||'').slice(0,7)})),'Month','Amount_INR').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[1]),'line');
+k('expenses',[['Expense records',num(exp.length),'Operating expense entries'],['Total expenses',money(sum(exp,'Amount_INR')),'Recorded expense amount'],['Paid expenses',money(sum(exp.filter(r=>r.Payment_Status==='Paid'),'Amount_INR')),'Payment status: Paid'],['Pending expenses',money(sum(exp.filter(r=>r.Payment_Status!=='Paid'),'Amount_INR')),'Not marked Paid']]);
+
+section('service','After-Sales Service Analysis','Service activity, service categories, costs, mileage and completion status.',
+'',`${panel('Service type distribution','vType')}${panel('Service status','vStatus')}${panel('Service cost by type','vCost')}${panel('Service records by showroom','vShow')}${panel('Monthly service activity','vMonth')}`,
+table('Service history',['Service ID','Vehicle ID','Customer ID','Showroom','Service date','Service type','Odometer KM','Service cost','Status'],srv.slice(0,250).map(r=>[r.Service_ID,r.Vehicle_ID,r.Customer_ID,r.Showroom_ID,r.Service_Date,r.Service_Type,num(r.Odometer_KM),money(r.Service_Cost_INR),r.Service_Status])));
+chart('vType',group(srv,'Service_Type').map(x=>x[0]),group(srv,'Service_Type').map(x=>x[1]),'doughnut');
+chart('vStatus',group(srv,'Service_Status').map(x=>x[0]),group(srv,'Service_Status').map(x=>x[1]),'doughnut');
+chart('vCost',group(srv,'Service_Type','Service_Cost_INR').map(x=>x[0]),group(srv,'Service_Type','Service_Cost_INR').map(x=>x[1]));
+chart('vShow',group(srv,'Showroom_ID').map(x=>x[0]),group(srv,'Showroom_ID').map(x=>x[1]));
+chart('vMonth',group(srv.map(r=>({...r,Month:String(r.Service_Date||'').slice(0,7)})),'Month').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[0]),group(srv.map(r=>({...r,Month:String(r.Service_Date||'').slice(0,7)})),'Month').sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[1]),'line');
+k('service',[['Service records',num(srv.length),'Recorded service events'],['Service cost',money(sum(srv,'Service_Cost_INR')),'Total recorded service cost'],['Completed services',num(srv.filter(r=>r.Service_Status==='Completed').length),'Status marked Completed'],['Unique vehicles serviced',num(uniq(srv.map(r=>r.Vehicle_ID)).length),'Distinct vehicle IDs']]);
+
+section('data','Dataset & Data Dictionary','Workbook structure, record counts and field definitions. The workbook is the source of truth.',
+'',`${panel('Records by worksheet','dRows')}${panel('Dataset coverage','dTypes')}`,
+table('Workbook inventory',['Worksheet','Records','Purpose'],[['Vehicle_Master',vm.length,'Vehicle variants and specifications'],['Vehicle_Inventory',rows('Vehicle_Inventory').length,'Physical vehicle stock and status'],['Sales_Transactions',rows('Sales_Transactions').length,'Completed vehicle sales'],['Customer_Details',rows('Customer_Details').length,'Synthetic customer profiles'],['Showroom_Master',show.length,'Showroom location master'],['Employee_Master',rows('Employee_Master').length,'Employee and sales target master'],['Purchase_Records',rows('Purchase_Records').length,'Vehicle procurement records'],['Expenses',rows('Expenses').length,'Operating expense ledger'],['Service_Records',rows('Service_Records').length,'After-sales service history'],['Data_Dictionary',rows('Data_Dictionary').length,'Field definitions and notes']])+
+table('Data dictionary',['Worksheet','Field','Definition','Notes'],rows('Data_Dictionary').map(r=>[r.Sheet_Name,r.Field_Name,r.Definition,r.Notes])));
+chart('dRows',['Vehicle Master','Inventory','Sales','Customers','Showrooms','Employees','Purchases','Expenses','Services'],[vm.length,rows('Vehicle_Inventory').length,rows('Sales_Transactions').length,cust.length,show.length,emp.length,pur.length,exp.length,srv.length]);
+chart('dTypes',['Master data','Operational records'],[vm.length+show.length+emp.length+cust.length,inv.length+sales.length+pur.length+exp.length+srv.length],'doughnut');
 }
-function filtered(){
- const brand=$('brandFilter').value, showroom=$('showroomFilter').value, region=$('regionFilter').value, fuel=$('fuelFilter').value, year=$('yearFilter').value;
- const invMap=Object.fromEntries(inventory.map(v=>[v.Vehicle_ID,v]));
- const s=sales.filter(r=>{const v=invMap[r.Vehicle_ID];return (!brand||r.Brand===brand)&&(!showroom||r._showroom===showroom)&&(!region||r._region===region)&&(!fuel||v?.Fuel_Type===fuel)&&(!year||String(r._date?.getFullYear())===year)});
- const inv=inventory.filter(v=>(!brand||v.Brand===brand)&&(!showroom||showrooms.find(x=>x.Showroom_ID===v.Showroom_ID)?.Showroom_Name===showroom)&&(!region||v._region===region)&&(!fuel||v.Fuel_Type===fuel));
- return {s,inv};
-}
-function render(){
- const {s,inv}=filtered();const revenue=sum(s,'Net_Selling_Price_INR'),profit=sum(s,'Gross_Profit_INR');
- $('revenue').textContent=compact(revenue);$('units').textContent=s.length.toLocaleString('en-IN');$('avgPrice').textContent=compact(s.length?revenue/s.length:0);$('profit').textContent=compact(profit);
- $('stock').textContent=inv.filter(v=>['In Stock','Reserved','In Transit'].includes(v.Vehicle_Status)).length.toLocaleString('en-IN');
- const months={};s.forEach(r=>{if(!r._date)return;const k=`${r._date.getFullYear()}-${String(r._date.getMonth()+1).padStart(2,'0')}`;months[k]=(months[k]||0)+num(r.Net_Selling_Price_INR)});
- const monthKeys=Object.keys(months).sort();
- const brandRev=aggregate(s,'Brand','Net_Selling_Price_INR'),brandEntries=Object.entries(brandRev).sort((a,b)=>b[1]-a[1]).slice(0,10);
- const showroomUnits=aggregate(s,'_showroom','Sale_ID'); // count corrected below
- const shCount={};s.forEach(r=>shCount[r._showroom]=(shCount[r._showroom]||0)+1);
- const invStatus={};inv.forEach(v=>invStatus[v.Vehicle_Status]=(invStatus[v.Vehicle_Status]||0)+1);const fuelCount={};s.forEach(r=>{const v=inv.find(x=>x.Vehicle_ID===r.Vehicle_ID);if(v)fuelCount[v.Fuel_Type]=(fuelCount[v.Fuel_Type]||0)+1});
- destroyCharts();
- chart('monthlyChart','line',monthKeys.map(k=>{const [y,m]=k.split('-');return new Date(+y,+m-1,1).toLocaleDateString('en-IN',{month:'short',year:'2-digit'})}),[{label:'Net revenue',data:monthKeys.map(k=>months[k]),borderColor:'#3768e5',backgroundColor:'rgba(55,104,229,.12)',fill:true,tension:.35,pointRadius:2,borderWidth:2}],{currency:true});
- chart('brandChart','doughnut',brandEntries.map(x=>x[0]),[{label:'Revenue',data:brandEntries.map(x=>x[1]),backgroundColor:['#3768e5','#12a594','#f0a04b','#8b78dc','#e16b77','#5b9bd5','#7dbb79','#d5a24a','#7d91aa','#b47bd1'],borderWidth:0}],{options:{cutout:'64%'}});
- const shEntries=Object.entries(shCount).sort((a,b)=>b[1]-a[1]);
- chart('showroomChart','bar',shEntries.map(x=>x[0]),[{label:'Cars sold',data:shEntries.map(x=>x[1]),backgroundColor:'#12a594',borderRadius:5}],{options:{indexAxis:'y',plugins:{legend:{display:false}}}});
- const statusEntries=Object.entries(invStatus);
- chart('inventoryChart','doughnut',statusEntries.map(x=>x[0]),[{label:'Vehicles',data:statusEntries.map(x=>x[1]),backgroundColor:['#12a594','#edaa50','#6e8de5','#a7b2c4','#df6464'],borderWidth:0}],{options:{cutout:'62%'}});
- const fuelEntries=Object.entries(fuelCount).sort((a,b)=>b[1]-a[1]);
- chart('fuelChart','bar',fuelEntries.map(x=>x[0]),[{label:'Cars sold',data:fuelEntries.map(x=>x[1]),backgroundColor:'#6482d9',borderRadius:5}],{options:{plugins:{legend:{display:false}}}});
- const modelMap={};s.forEach(r=>{const k=r.Brand+'||'+r.Model;if(!modelMap[k])modelMap[k]={brand:r.Brand,model:r.Model,units:0,revenue:0};modelMap[k].units++;modelMap[k].revenue+=num(r.Net_Selling_Price_INR)});
- $('topModels').innerHTML=Object.values(modelMap).sort((a,b)=>b.units-a.units).slice(0,10).map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.model}</b></td><td>${r.brand}</td><td>${r.units.toLocaleString('en-IN')}</td><td>${compact(r.revenue)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No matching sales</td></tr>';
- $('recentSales').innerHTML=[...s].sort((a,b)=>(b._date||0)-(a._date||0)).slice(0,12).map(r=>`<tr><td>${r.Sale_ID}</td><td>${fmtDate(r.Sale_Date)}</td><td><b>${r.Brand}</b> ${r.Model}</td><td>${r._showroom}</td><td><span class="pill">${r.Payment_Mode}</span></td><td>${money(num(r.Net_Selling_Price_INR))}</td><td>${money(num(r.Gross_Profit_INR))}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">No matching sales</td></tr>';
-}
-['brandFilter','showroomFilter','regionFilter','fuelFilter','yearFilter'].forEach(id=>$(id).addEventListener('change',render));
-$('filePicker').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{$('loadStatus').textContent='Reading workbook…';loadWorkbook(await f.arrayBuffer())}catch(err){$('loadStatus').textContent='Could not load workbook';$('notice').style.display='block';$('notice').textContent=err.message}});
-async function boot(){
- try{
-  const res=await fetch('./AutoWorld_India_Dataset.xlsx');
-  if(!res.ok)throw new Error('Workbook file not found next to index.html');
-  loadWorkbook(await res.arrayBuffer());
- }catch(e){$('loadStatus').textContent='Excel file needed';$('notice').style.display='block';}
-}
-boot();
-</script>
-</body>
-</html>
+function initFilters(){let all=[...rows('Vehicle_Inventory'),...rows('Sales_Transactions')];let years=uniq(all.flatMap(r=>[String(r.Sale_Date||'').slice(0,4),String(r.Purchase_Date||'').slice(0,4)]).filter(x=>/^\d{4}$/.test(x)));$('yearFilter').innerHTML='<option>All</option>'+years.map(x=>`<option>${x}</option>`).join('');$('showroomFilter').innerHTML='<option value="All">All showrooms</option>'+rows('Showroom_Master').map(r=>`<option value="${r.Showroom_ID}">${r.Showroom_Name}</option>`).join('');$('brandFilter').innerHTML='<option value="All">All brands</option>'+uniq(rows('Vehicle_Inventory').map(r=>r.Brand)).map(x=>`<option>${x}</option>`).join('');$('fuelFilter').innerHTML='<option value="All">All fuel types</option>'+uniq(rows('Vehicle_Inventory').map(r=>r.Fuel_Type)).map(x=>`<option>${x}</option>`).join('')}
+function renderAll(){render();const active=document.querySelector('.page.active');if(active){/* rerender creates current content and charts */}}
+function resetFilters(){['yearFilter','showroomFilter','brandFilter','fuelFilter'].forEach(id=>$(id).value='All');render()}
+['yearFilter','showroomFilter','brandFilter','fuelFilter'].forEach(id=>$(id).addEventListener('change',render));
+$('nav').addEventListener('click',e=>{let b=e.target.closest('button[data-page]');if(!b)return;document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===b.dataset.page));$('pageTitle').textContent=b.textContent.trim();});
+function parseWorkbook(wb){DB={};const sheets=wb.SheetNames;for(const name of sheets){const ws=wb.Sheets[name];if(name==='Vehicle_Master'){let a=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const heads=['Variant_ID','Brand','Model','Variant','Body_Type','Fuel_Type','Transmission','Engine','Mileage','Ex_Showroom_Price_INR','Seating_Capacity','Airbags','Sunroof'];DB[name]=a.filter(r=>r.length).map(r=>Object.fromEntries(heads.map((h,i)=>[h,r[i]])));}else DB[name]=XLSX.utils.sheet_to_json(ws,{defval:'',cellDates:true}).map(row=>Object.fromEntries(Object.entries(row).map(([k,v])=>[k,v instanceof Date? v.toISOString().slice(0,10):v])));}
+initFilters();$('loadNotice').textContent='Workbook loaded successfully. Use the filters above and navigation on the left to explore all business areas.';render();}
+$('fileInput').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;try{parseWorkbook(XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}));}catch(err){$('loadNotice').textContent='Could not read workbook: '+err.message;}});
+async function loadDefault(){try{const res=await fetch('AutoWorld_India_Dataset.xlsx');if(!res.ok)throw Error('Workbook not found beside index.html');const buf=await res.arrayBuffer();parseWorkbook(XLSX.read(buf,{type:'array',cellDates:true}));}catch(e){$('loadNotice').textContent='Select AutoWorld_India_Dataset.xlsx using the Upload Excel workbook button. The dashboard works when the workbook is in the same folder as index.html or uploaded manually.'}}
+loadDefault();
+</script></body></html>
